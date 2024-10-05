@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: bash /code/entrypoint.sh
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://ptest:password@db:5432/pdata
+      - SWAPI_BASE_URL=https://swapi.dev/api
+    depends_on:
+      - db
+  db:
+    image: postgres:16-bullseye
+    restart: always
+    deploy:
+      mode: replicated
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    expose:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=ptest
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=pdata
+
+volumes:
+  pgdata:
